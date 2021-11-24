@@ -1,0 +1,51 @@
+table.function-table td {
+    border-style: solid;
+    border-color: #ddd;
+    border-width: 1px;
+    width: 1.5em;
+    height: 1.5em;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 25px;
+}
+
+table.function-table td > div {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    transition: width 0.2s ease-out;
+}
+
+table.function-table td input.invalid-input {
+    box-shadow: red inset 0px 0px 2px 2px;
+}
+
+table.function-table td input {
+    box-shadow: red inset 0px 0px 0px 0px;
+    transition: box-shadow 0.2s ease-out;
+    border-style: none;
+    font-size: inherit;
+    text-align: inherit;
+    vertical-align: inherit;
+    padding: 0px;
+    background-color: transparent;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    position: absolute;
+}
+
+table.function-table td span {
+    text-indent: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-decoration: transparent;
+    display: block;
+    border-style: none;
+    background: none;
+}
+
+table.function-table td input:focus {
+    outline: none;
+}

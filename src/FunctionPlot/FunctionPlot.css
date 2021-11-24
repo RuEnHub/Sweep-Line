@@ -1,0 +1,8 @@
+div.function-plot {
+    overflow: hidden;
+    background-color: #FFFFFF;
+    position: relative;
+    border-radius: 10px;
+    border: #aaaaaa 2px solid;
+    /* box-shadow: #555 0px 0px 5px 1px; */
+}
