@@ -1,0 +1,48 @@
+.plot {
+    overflow: hidden;
+    width: 500px;
+    height: 500px;
+    border: 2px solid gray;
+    border-radius: 5px;
+    position: relative;
+}
+
+.lineSegmentPoint {
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    left: -5px;
+    top: -5px;
+    z-index:10;
+    background-color: blue;
+    position: absolute;
+    transition-property: background-color, box-shadow, border-color;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-out;
+}
+
+.lineSegmentPoint:hover {
+    box-shadow: #5555ff 0px 0px 0px 2px;
+}
+
+td > input {
+    width: 5em;
+    height: 2em;
+    border: none;
+}
+
+td {
+    border: 1px solid gray;
+    text-align: center;
+}
+
+body {
+    margin: 16px;
+}
+
+table {
+    border: 2px solid gray;
+    border-radius: 10px;
+    border-collapse: collapse;
+    margin: 16px 0px;
+}
