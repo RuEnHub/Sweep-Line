@@ -1,4 +1,4 @@
-import {LineSegmentData, ListEvent, Type, CrossPoint} from './Plot/LineSegmentData'
+import {LineSegmentData, ListEvent, Type} from './Plot/LineSegmentData'
 
 import PlotState from './Plot/PlotState'
 
