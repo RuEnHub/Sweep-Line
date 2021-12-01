@@ -41,7 +41,7 @@ function SweepLine(state: PlotState) {
             SearchCrossUp(j) //поиск перечечения сверху
             SearchCrossDown(j) //поиск перечечения снизу
         } else if (ListA[i].type == Type.Cross) { //пересечение
-            let indDown = ListB.findIndex(element => element == ListA[i].id); //index нижнего отрезка в момент пересечения
+            const indDown = ListB.findIndex(element => element == ListA[i].id); //index нижнего отрезка в момент пересечения
             [ListB[indDown], ListB[indDown+1]] = [ListB[indDown+1], ListB[indDown]]
             SearchCrossUp(indDown+1)
             SearchCrossDown(indDown)   
@@ -69,7 +69,7 @@ function SweepLine(state: PlotState) {
     function SearchCrossUp(ind: number) {     
         if (ind+1 < ListB.length ? Cross(ListB[ind],ListB[ind+1]): false) {
             
-            let t = IndexCross(dot[0])
+            const t = IndexCross(dot[0])
             if (t != -1) { //если текущего пересечения ещё нет в списке ListA
                 ListA.splice(t,0,{x: dot[0],type: Type.Cross,id: ListB[ind], id2: ListB[ind+1]})
                 state.addCross([{x: dot[0],y: dot[1]}])
@@ -80,7 +80,7 @@ function SweepLine(state: PlotState) {
     function SearchCrossDown(ind: number) {
         if (ind-1 >= 0 ? Cross(ListB[ind],ListB[ind-1]): false) {
             
-            let t = IndexCross(dot[0])
+            const t = IndexCross(dot[0])
             if (t != -1) { //если текущего пересечения ещё нет в списке ListA
                 ListA.splice(t,0,{x: dot[0],type: Type.Cross,id: ListB[ind-1], id2: ListB[ind]})
                 state.addCross([{x: dot[0],y: dot[1]}])  
