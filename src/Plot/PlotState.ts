@@ -1,6 +1,6 @@
 import { action, computed, makeObservable, observable } from 'mobx'
 import { map } from '../utils/mapNumber'
-import {LineSegmentData} from './LineSegmentData'
+import {LineSegmentData, CrossPoint} from './LineSegmentData'
 
 type Bounds = {
     minX: number
@@ -21,6 +21,8 @@ export default class PlotState {
             { x: 2, y: 2 },
         ],
     ]
+
+    @observable cross: CrossPoint[] = []
 
     constructor(readonly width: number, readonly height: number) {
         makeObservable(this)
@@ -50,6 +52,10 @@ export default class PlotState {
     @action drag(dX: number, dY: number) {
         this.offsetX -= dX * this.scale;
         this.offsetY += dY * this.scale;
+    }
+
+    @action addCross(point: CrossPoint) {
+        this.cross.push(point)
     }
 
     pxToY(px: number) {

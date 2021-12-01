@@ -44,5 +44,6 @@ table {
     border: 2px solid gray;
     border-radius: 10px;
     border-collapse: collapse;
-    margin: 16px 0px;
+    float: left;
+    margin: 16px 2px;
 }
