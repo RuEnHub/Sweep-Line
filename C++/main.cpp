@@ -4,7 +4,9 @@
 #include<algorithm>
 #include<math.h>
 using namespace std;
+const double EPS = -1E-9;
 double dot[2];  // точка пересечения
+double tecx;
 
 enum Type {
     Start,
@@ -20,13 +22,14 @@ struct seg {
 	pt p, q;
     int id;
     
-    double GetY (double x) const {
-		if (p.x == q.x)  return p.y;
-		return p.y + (q.y - p.y) * (x - p.x) / (q.x - p.x);
+    double GetY (seg s, double x) const {
+		if (s.p.x == s.q.x)  return s.p.y;
+		return s.p.y + (s.q.y - s.p.y) * (x - s.p.x) / (s.q.x - s.p.x);
 	}
 
     bool operator< (const seg & s) const {
-        return GetY(p.x) < s.p.y;
+        //cout<<"log: "<<GetY(*this, tecx)<<" "<<GetY(s, tecx)<<" "<<(GetY(*this, tecx)  <= GetY(s, tecx))<<endl;
+        return GetY(*this, tecx) <= GetY(s, tecx);
     }
 };
 
@@ -62,6 +65,7 @@ struct event {
 
 set<event> listA; //множество контрольных точек
 vector<pt> res;
+bool logg = false; 
 set<seg> listB; //множество id отрезков в момент времени
 inline set<seg>::iterator prev (set<seg>::iterator it) {
 	return it == listB.begin() ? listB.end() : --it;
@@ -71,16 +75,22 @@ inline set<seg>::iterator next (set<seg>::iterator it) {
 }
 
 void CrossRes(int id, int id2) {
+    dot[0] = round(dot[0]*100000)/100000;
+    dot[1] = round(dot[1]*100000)/100000;
     res.push_back({dot[0],dot[1]});
     listA.insert({dot[0],Cross,id, id2});
+    if (logg)
+        cout<<"NEW CROSS x="<<dot[0]<<" y="<<dot[1]<<endl;
 }
 
-int main() {  
+int main() {
+    
     int n;
     double x1, y1, x2, y2;
     //cout << "Введите количество отрезков: ";
     cin >> n;
-
+    if (n < 0) logg = true;
+    n = abs(n);
     vector<seg> a(n); //вектор с координатами
     vector < set<seg>::iterator > where(n); //итераторы на координаты в listB
     
@@ -106,8 +116,10 @@ int main() {
 
     listB.clear();
     for (event tec : listA) { //обработка событий
-
+        tecx = tec.x;
         if (tec.type == Start){ // обработка начала отрезка
+            if (logg)
+                cout<<"add id: "<<tec.id<<endl;
             set<seg>::iterator
 				nxt = listB.lower_bound(a[tec.id]),
 				prv = prev (nxt);
@@ -117,28 +129,46 @@ int main() {
                     CrossRes(tec.id, (*prv).id);
                 where[tec.id] = listB.insert (nxt, a[tec.id]);
         } else if (tec.type == End) { // обработка конца отрезка
+            if (logg)
+                cout<<"del id: "<<tec.id<<endl;
             set<seg>::iterator
 				nxt = next (where[tec.id]),
 				prv = prev (where[tec.id]);
-			if (nxt != listB.end() && prv != listB.end() && cross(*nxt, *prv))
+			if (nxt != listB.end() && prv != listB.begin() && cross(*nxt, *prv))
 				CrossRes((*prv).id, (*nxt).id);
 			listB.erase (where[tec.id]);
         } else { // обработка пересечения
-            cout<<"пересечение "<<tec.id<<" "<<tec.id2<<endl;
-            set<seg>::iterator
-                up = where[0],
-                down = where[1];
-            //iter_swap(&where[tec.id],&where[tec.id2]);
-            //swap(where[tec.id],where[tec.id2]);
-            //listB.erase (where[tec.id]);
-            //listB.erase (where[tec.id2]);
+            if (logg)
+                cout<<"swap id: "<<tec.id<<" "<<tec.id2<<endl;
             
-            //if(up == where[1])
-            //cout<<"aaaaaaaaaaaaa";
+            if (distance(listB.begin(),where[tec.id]) - distance(listB.begin(),where[tec.id2]) < 0) //до пересечения id должен быть ниже id2
+                swap(tec.id, tec.id2);
+
+            listB.erase (where[tec.id2]);
+            listB.erase (where[tec.id]);
+            
+
+            set<seg>::iterator //вставка верхнего и сравнение с верхним соседом
+                nxt = listB.lower_bound(a[tec.id2]);
+            cout<<(nxt == listB.end())<<" fail1 "<<(*nxt).id<<" "<<tec.id2<<endl;
+            if (nxt != listB.end()&&cross(*nxt, a[tec.id2])){
+                CrossRes(tec.id2, (*nxt).id);
+            }
+            where[tec.id2] = listB.insert(nxt,a[tec.id2]);
+
+            nxt = listB.lower_bound(a[tec.id]); //вставка нижнего и сравнение с нижним соседом
+            set<seg>::iterator
+                prv = (prev(nxt));
             for (seg i : listB) {
                 cout<<i.id<<" ";
-            } break;
+            } cout<<endl;
+            cout<<(prv == listB.begin())<<" fail2 "<<(*prv).id<<" "<<tec.id<<endl;
+            if (prv != listB.begin()&&cross(*prv, a[tec.id])) {
+                CrossRes(tec.id, (*prv).id);       
+            }
+            where[tec.id] = listB.insert(nxt,a[tec.id]);
         }
+
         for (seg i : listB) {
             cout<<i.id<<" ";
         }
