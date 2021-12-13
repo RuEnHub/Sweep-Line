@@ -5,14 +5,12 @@
 #include<math.h>
 #include<ctime>
 using namespace std;
-const double EPS = -1E-9;
 double dot[2];  // точка пересечения
 int precision = 5;
 double tecx;
 
 enum Type { 
-    Start,
-    Cross,  
+    Start, 
     End,   
 };
 
@@ -60,19 +58,17 @@ bool cross(const seg & a, const seg & b) {
 struct event {
 	double x;
 	Type type;
-    int id, id2;
-    double y;
+    int id;
 
     bool operator< (const event & e) const {
         if (x != e.x)  return x < e.x;
 		if (type != e.type) return type <= e.type;
 
-        if (e.type == Cross) return y != e.y;
-        return true;
+        return id < e.id;
     }
 };
 
-
+vector<seg> a;
 set<event> listA; //множество контрольных точек
 bool logg = false; 
 set<seg> listB; //множество id отрезков в момент времени
@@ -84,7 +80,9 @@ inline set<seg>::iterator next (set<seg>::iterator it) {
 }
 
 void CrossRes(int id, int id2) {
-    listA.insert({dot[0],Cross,id, id2, dot[1]});
+    cout<<"Пересечение в точке "<<"x= "<<dot[0]<<" y= "<<dot[1]<<"\n";
+    cout<<"Время работы: "<<clock()<<"\n";
+    exit(0);
 }
 
 int main() {
@@ -96,7 +94,7 @@ int main() {
     n = abs(n);
     vector<seg> a(n); //вектор с координатами
     vector < set<seg>::iterator > where(n); //итераторы на координаты в listB
-    
+    a.resize(n);
 
     for (int i = 0; i < n; i++) {
         //cout<<i+1<<": ";
@@ -118,7 +116,6 @@ int main() {
     }
 
     listB.clear();
-    unsigned int start_time = clock();
     for (event tec : listA) { //обработка событий
         tecx = tec.x;
         
@@ -133,7 +130,7 @@ int main() {
                 if (prv != listB.end()&&cross(*prv, a[tec.id]))
                     CrossRes(tec.id, (*prv).id);
                 where[tec.id] = listB.insert (nxt, a[tec.id]);
-        } else if (tec.type == End) { // обработка конца отрезка
+        } else { // обработка конца отрезка
             if (logg)
                 cout<<">>del id: "<<tec.id<<"\n";
             set<seg>::iterator
@@ -142,38 +139,6 @@ int main() {
 			if (nxt != listB.end() && prv != listB.end() && cross(*nxt, *prv))
 				CrossRes((*prv).id, (*nxt).id);
 			listB.erase (where[tec.id]);
-        } else { // обработка пересечения
-            if (logg)
-                cout<<">>swap id: "<<tec.id<<" "<<tec.id2<<"\n";
-            
-            if (distance(listB.begin(),where[tec.id]) - distance(listB.begin(),where[tec.id2]) < 0) //до пересечения id должен быть ниже id2
-                swap(tec.id, tec.id2);
-
-            listB.erase (where[tec.id2]);
-            listB.erase (where[tec.id]);
-            
-
-            set<seg>::iterator //вставка верхнего и сравнение с верхним соседом
-                nxt = listB.lower_bound(a[tec.id2]),
-                prv = prev(nxt);
-            //cout<<(nxt == listB.end())<<" fail1 "<<(*nxt).id<<" "<<tec.id2<<"\n";
-            if (a[tec.id2].p.x == a[tec.id2].q.x) {
-                while (cross(*nxt, a[tec.id2])) {
-                    CrossRes(tec.id2, (*nxt).id);
-                    nxt = next(nxt);
-                }
-            } else 
-            if (nxt != listB.end()&&cross(*nxt, a[tec.id2])){             
-                CrossRes(tec.id2, (*nxt).id);
-            }
-            where[tec.id2] = listB.insert(nxt,a[tec.id2]);
-            
-            //nxt = listB.lower_bound(a[tec.id]); //вставка нижнего и сравнение с нижним соседом
-            //cout<<(prv == listB.end())<<" fail2 "<<(*prv).id<<" "<<tec.id<<"\n";
-            if (prv != listB.end()&&cross(*prv, a[tec.id])) {
-                CrossRes(tec.id, (*prv).id);       
-            }
-            where[tec.id] = listB.insert(nxt,a[tec.id]);
         }
 
         if(logg) {
@@ -182,14 +147,9 @@ int main() {
 	        cout<<"\n";
         } 
     }
-    unsigned int end_time = clock();
 
-    /*for (auto i : listA) {
-        if (i.type == Cross)
-            cout<<"x= "<<i.x<<" y= "<<i.y<<"\n";
-    }*/
-    cout<<"size: "<<(listA.size() - 2 * n)<<"\n";
-    cout<<"time: "<<end_time - start_time<<"\n";
+    cout<<"Пересечение не обнаружено!"<<"\n";
+    cout<<"Время работы: "<<clock()<<"\n";
 
     return 0;
 }
